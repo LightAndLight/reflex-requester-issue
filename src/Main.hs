@@ -10,8 +10,8 @@ import Control.Monad.Fix
 import Control.Monad.IO.Class
 import Data.Char
 import Data.Functor.Identity
+import Data.Maybe
 import Data.Map (Map)
-import Debug.Trace (trace, traceShow)
 
 import qualified Data.Map as Map
 
@@ -41,16 +41,11 @@ network eLine = do
       -}
       eModify :: Event t (Map Int String)
       eModify =
-        traceEvent "event" $
         attachWith
           (\cur m ->
-             Map.foldr
-               (\v ->
-                  if all isDigit v
-                  then Map.insert (read v) ""
-                  else id)
-               (trace ("current: " <> show (fst <$> cur)) m)
-               m)
+             fmap
+               (if Map.member 0 m then (++ "test") else (++ maybe "" fst (Map.lookup 0 cur)))
+               (foldr (\a -> if all isDigit a then Map.insert (read a) "" else id) m m))
           (current dStuff)
           (switchDyn $ mergeMap . fmap snd <$> dStuff)
 
