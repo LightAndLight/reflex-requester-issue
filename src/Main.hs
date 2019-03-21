@@ -44,7 +44,7 @@ network eLine = do
         attachWith
           (\cur m ->
              fmap
-               (if Map.member 0 m then (++ "test") else (++ maybe "" fst (Map.lookup 0 cur)))
+               (if Map.member 0 m then (++ "haszero") else (++ maybe "" ((++"old") . fst) (Map.lookup 0 cur)))
                (foldr (\a -> if all isDigit a then Map.insert (read a) "" else id) m m))
           (current dStuff)
           (switchDyn $ mergeMap . fmap snd <$> dStuff)
